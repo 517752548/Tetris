@@ -6,10 +6,12 @@ public class Game : MonoBehaviour
 {
     
     public GameObject[] list;//Collection of all Tetrimos
+    public Vector3 spawnpos;
     public int startX = 0;
     public int endX = 10;
     public int width = 0;
     public int height = 0;
+   
 
     public Transform[,] grid;
 
@@ -23,6 +25,7 @@ public class Game : MonoBehaviour
         }
 
         grid = new Transform[width, height];
+        spawnpos = new Vector3(5, 18, 0);
 
         spawnNextTetrimo();
 
@@ -34,7 +37,7 @@ public class Game : MonoBehaviour
 
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-
+                Debug.Log( x + "," + y);
                 if (grid[x, y] != null) {
                     if (grid[x, y].parent == tetrimo.transform) {
                         grid[x, y] = null;
@@ -47,7 +50,7 @@ public class Game : MonoBehaviour
 
         foreach (Transform minimo in tetrimo.transform) {
             Vector2 pos = tetrimo.round(minimo.position);
-            Debug.Log((int)pos.x+","+(int)pos.y);
+            //Debug.Log((int)pos.x+","+(int)pos.y);
             grid[(int)pos.x, (int)pos.y] = minimo;
         }
 
@@ -66,11 +69,11 @@ public class Game : MonoBehaviour
     public void spawnNextTetrimo() {
 
         int index = Random.Range(0, list.Length);
-        Instantiate(list[1], new Vector3(5, 18, 0), Quaternion.identity);
+        Instantiate(list[index], spawnpos, Quaternion.identity);
     }
 
     public bool isInGrid(Vector2 pos) {
-
+        Debug.Log("CALLED");
         if ((int)pos.x <= startX || (int)pos.x > endX) {
             return false;//Retrurns false if outside of x bounds
         }

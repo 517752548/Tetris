@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class Tetrimo : MonoBehaviour
@@ -27,10 +28,12 @@ public class Tetrimo : MonoBehaviour
 
 
     bool isValid(Transform tetrimo) {
-
+        Debug.Log("isValid");
+        Debug.Log(tetrimo.gameObject.name);
         foreach(Transform minimo in tetrimo){
 
             Vector2 pos = round(minimo.position);
+            Debug.Log("pos ");
 
             if (!FindObjectOfType<Game>().isInGrid(pos)) {
                 return false;
@@ -43,10 +46,24 @@ public class Tetrimo : MonoBehaviour
 
 
         }
-
+        Debug.Log("isValid=true");
         return true;
     }
 
+
+
+    void gameOverCheck(Transform tetrimo) {
+        foreach (Transform minimo in tetrimo) {
+            Vector2 pos = round(minimo.position);
+            if (pos.y >= FindObjectOfType<Game>().spawnpos.y-1) {
+                enabled = false;
+                SceneManager.LoadScene("GameOver");
+            }
+
+        }
+    }
+
+    
 
 
 
@@ -96,10 +113,11 @@ public class Tetrimo : MonoBehaviour
                 FindObjectOfType<Game>().updateGrid(this);
             }
             else {
+                Debug.Log("Terminated "+this.gameObject.name);
                 transform.position += Vector3.up;
                 enabled = false;
                 FindObjectOfType<Game>().clearRows();
-                
+                gameOverCheck(this.transform);
                 FindObjectOfType<Game>().spawnNextTetrimo();
             }
 
