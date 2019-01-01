@@ -5,7 +5,7 @@ using UnityEngine;
 public class Tetrimo : MonoBehaviour
 {
 
-    public float fallspeed = 10;
+    public float fallspeed = 1;
     public float time = 0;
     // Start is called before the first frame update
     void Start()
@@ -20,8 +20,8 @@ public class Tetrimo : MonoBehaviour
     }
 
 
-    Vector3 round(Vector3 input) {
-        return new Vector3(Mathf.Round(input.x),Mathf.Round(input.y),Mathf.Round(input.z));
+    public Vector2 round(Vector3 input) {
+        return new Vector2(Mathf.Round(input.x),Mathf.Round(input.y));
 
     }
 
@@ -30,17 +30,25 @@ public class Tetrimo : MonoBehaviour
 
         foreach(Transform minimo in tetrimo){
 
-            Vector3 pos = round(minimo.position);
+            Vector2 pos = round(minimo.position);
 
             if (!FindObjectOfType<Game>().isInGrid(pos)) {
                 return false;
             }
-            
+
+            if (FindObjectOfType<Game>().getTransform(pos) != null && FindObjectOfType<Game>().getTransform(pos).parent != tetrimo)
+            {
+                return false;
+            }
+
 
         }
 
         return true;
     }
+
+
+
 
     void checkUserInput() {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -48,7 +56,7 @@ public class Tetrimo : MonoBehaviour
             transform.position += Vector3.left;
             if (isValid(transform))
             {
-
+                FindObjectOfType<Game>().updateGrid(this);
             }
             else
             {
@@ -60,7 +68,7 @@ public class Tetrimo : MonoBehaviour
             transform.position += Vector3.right;
             if (isValid(transform))
             {
-
+                FindObjectOfType<Game>().updateGrid(this);
             }
             else
             {
@@ -73,7 +81,7 @@ public class Tetrimo : MonoBehaviour
             transform.position = round(transform.position);
             if (isValid(transform))
             {
-
+                FindObjectOfType<Game>().updateGrid(this);
             }
             else
             {
@@ -85,10 +93,14 @@ public class Tetrimo : MonoBehaviour
             transform.position += Vector3.down;
             if (isValid(transform))
             {
-
+                FindObjectOfType<Game>().updateGrid(this);
             }
             else {
                 transform.position += Vector3.up;
+                enabled = false;
+                FindObjectOfType<Game>().clearRows();
+                
+                FindObjectOfType<Game>().spawnNextTetrimo();
             }
 
             time = Time.time;
